@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style type="text/css">
+        div{
+            margin: 0 0 10px;
+        }
+
+        label, p{
+            font-weight: bold;
+        }
+
+        li{
+            list-style: none;
+        }
+
+        li > label{
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Регистрация</h1>
+<form action="upload.php" method="post" enctype="multipart/form-data" >
+    <div>
+        <label for="login">Логин(email)</label><br />
+        <input type="email" name="login" id="login">
+    </div>
+    <div>
+         <label for="pasword">Пароль</label><br />
+         <input type="password" name="pasword" id="pasword">
+    </div>
+    <div>
+        <label for="name">Имя</label><br />
+        <input type="text" name="name" id="name">
+    </div>
+    <div>
+        <label for="age">Возраст</label><br />
+        <input type="number" min="0" max="120" step="1" name="age" id="age">
+    </div>
+    <div>
+        <label for="description">Описание</label><br />
+        <textarea name="description" id="description">
+        </textarea>
+
+    </div>
+
+    <div>
+        <label> <input type="file" name="file">Файл фото</label>
+    </div>
+    <div>
+        <input type="submit" value="Отправить">
+    </div>
+</form>
+</body>
+</html>
