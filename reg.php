@@ -42,7 +42,7 @@ if ($_POST) {
             return 'Загруженный файл не поддерживаемого формата';
         }
 
-        $uploadsDir = '/photos';
+        $uploadsDir = __DIR__ . '/photos';
         $newFileName = uniqid('', true) . '.' . $ext;
         move_uploaded_file($file['tmp_name'], "$uploadsDir/$newFileName");
     }
@@ -55,9 +55,10 @@ if ($_POST) {
     }
 
     if (!$ERRORS) {
+        echo '1';
         $sql = $db->prepare('INSERT INTO Users (email, password, name, age, description)
             VALUES (?, ?, ?, ?, ?);');
-        $sql->bind_param()
+        $sql->bind_param('sssis', $email, $password, $name, $age, $description);
 
 
        // $stmt = $mysqli->prepare("INSERT INTO CountryLanguage VALUES (?, ?, ?, ?)");
