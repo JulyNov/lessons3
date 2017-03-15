@@ -1,4 +1,6 @@
 <?php
+include __DIR__ . '/main.php';
+
 $ERRORS = [];
 
 foreach ($_POST as $key => $value) {
@@ -6,18 +8,61 @@ foreach ($_POST as $key => $value) {
 }
 
 if ($_POST) {
+
     if (!$_POST['email']) {
         $ERRORS[] = 'Необходим емаил';
-    }elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
         $ERRORS[] = 'Не похоже на емаил';
     }
     if (!$_POST['password']) {
         $ERRORS[] = 'Необходим пароль';
-    }elseif (mb_strlen($_POST['password']) < 2) {
+    } elseif (mb_strlen($_POST['password']) < 2) {
         $ERRORS[] = 'Слишком короткий пароль';
     }
     if (!$_POST['name']) {
         $ERRORS[] = 'Введите имя';
+    }
+    if ($_POST['age']) {
+        $_POST['age'] = (int)$_POST['age'];
+    }
+
+    function ProcessFile(array $file)
+    {
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+           return 'Ошибка загрузки файла';
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($ext, ['jpeg', 'jpg', 'gif', 'png'], true)) {
+            return 'Загруженный файл не картинка';
+        }
+
+        $type = getimagesize($file['tmp_name'])[2];
+        if (!in_array($type, [IMG_JPEG, IMG_GIF, IMG_PNG], true)) {
+            return 'Загруженный файл не поддерживаемого формата';
+        }
+
+        $uploadsDir = '/photos';
+        $newFileName = uniqid('', true) . '.' . $ext;
+        move_uploaded_file($file['tmp_name'], "$uploadsDir/$newFileName");
+    }
+
+    if ($_FILES['file']) {
+       $Error = ProcessFile($_FILES['file']);
+       if ($Error){
+           $ERRORS[] = $Error;
+       }
+    }
+
+    if (!$ERRORS) {
+        $sql = $db->prepare('INSERT INTO Users (email, password, name, age, description)
+            VALUES (?, ?, ?, ?, ?);');
+        $sql->bind_param()
+
+
+       // $stmt = $mysqli->prepare("INSERT INTO CountryLanguage VALUES (?, ?, ?, ?)");
+        //$stmt->bind_param('sssd', $code, $language, $official, $percent);
+
     }
 }
 
@@ -49,7 +94,7 @@ if ($ERRORS) {
     echo 'Внесите исправления:' . '<br>';
     echo '<ul>';
     foreach ($ERRORS as $value) {
-        echo '<li>' . $value . '</li>' ;
+        echo '<li>' . $value . '</li>';
     }
     echo '</ul>';
 }
@@ -61,7 +106,7 @@ if ($ERRORS) {
     </div>
     <div>
         <label for="password">Пароль</label><br/>
-        <input type="password" name="password" id="password" value="<?=htmlspecialchars($_POST['password'])?>">
+        <input type="password" name="password" id="password" value="<?= htmlspecialchars($_POST['password']) ?>">
     </div>
     <div>
         <label for="name">Имя</label><br/>
