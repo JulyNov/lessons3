@@ -69,7 +69,7 @@ if ($ERRORS) {
     echo '</ul>';
 }
 ?>
-<form action="login.php.php" method="post">
+<form action="login.php" method="post">
     <div>
         <label for="login">Логин (email)</label><br/>
         <input type="email" name="email" id="login" value="<?php echo htmlspecialchars($_POST['email']); ?>">
