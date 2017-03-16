@@ -1,6 +1,9 @@
 <?php
-$db = @new mysqli('localhost', 'root', '','lsn3', 3306);
-if (mysqli_connect_errno()){
-    die(mysqli_connect_error());
+session_start();
+
+try {
+    $db = new mysqli('localhost', 'root', '','lsn3', 3306);
+    $db->query('SET NAMES "UTF-8"');
+} catch (Exception $Exception) {
+    die($Exception->getMessage());
 }
-$db->query('SET NAMES "UTF-8"');

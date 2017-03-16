@@ -28,6 +28,10 @@ if ($_POST) {
 
     function ProcessFile(array $file)
     {
+        if ($file['error'] === UPLOAD_ERR_NO_FILE) {
+           return '';
+        }
+
         if ($file['error'] !== UPLOAD_ERR_OK) {
            return 'Ошибка загрузки файла';
         }
@@ -45,6 +49,7 @@ if ($_POST) {
         $uploadsDir = __DIR__ . '/photos';
         $newFileName = uniqid('', true) . '.' . $ext;
         move_uploaded_file($file['tmp_name'], "$uploadsDir/$newFileName");
+        return '';
     }
 
     if ($_FILES['file']) {
@@ -55,11 +60,16 @@ if ($_POST) {
     }
 
     if (!$ERRORS) {
-        echo '1';
+
         $sql = $db->prepare('INSERT INTO Users (email, password, name, age, description)
             VALUES (?, ?, ?, ?, ?);');
-        $sql->bind_param('sssis', $email, $password, $name, $age, $description);
+        $password = sha1($_POST['password']);
+        $sql->bind_param('sssis', $_POST['email'], $password, $_POST['name'], $_POST['age'], $_POST['description']);
+        $sql->execute();
 
+        $_SESSION['id'] = $sql->insert_id;
+        header('Location: /');
+        die();
 
        // $stmt = $mysqli->prepare("INSERT INTO CountryLanguage VALUES (?, ?, ?, ?)");
         //$stmt->bind_param('sssd', $code, $language, $official, $percent);
