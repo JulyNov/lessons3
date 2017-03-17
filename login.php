@@ -17,25 +17,26 @@ if ($_POST) {
     }
 
     if (!$ERRORS) {
-        $sql = $db->prepare('SELECT id, password FROM Users WHERE email = ?;');
+        $sql = $db->prepare('SELECT id, password FROM `Users` WHERE email = ?;');
         $sql->bind_param('s', $_POST['email']);
         $sql->execute();
+        $sql->bind_result($id, $password);
+        $row = $sql->fetch();
 
-        if (!$sql->num_rows) {
-            $ERRORS[] = 'Я вас не знаю, мы не знакомы. Вы можете зарегистрироваться <a href="/reg.php"> на этой странице </a>';
-        }else{
+        if (!$row) {
+            $ERRORS[] = 'Я вас не знаю. Вы можете зарегистрироваться <a href="/reg.php"> на этой странице </a>';
+        } else {
+            $entered_password = sha1($_POST['password']);
 
+            if ($password === $entered_password) {
+                $_SESSION['id'] = $id;
+                header('Location: /');
+                die();
+            }
+            $ERRORS[] = 'Пароль неверный';
         }
-
-        $password = sha1($_POST['password']);
-
-        $_SESSION['id'] = $sql->insert_id;
-        header('Location: /');
-        die();
-
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -81,6 +82,9 @@ if ($ERRORS) {
 
     <div>
         <input type="submit" value="Мамой клянусь!">
+    </div>
+    <div>
+        <a href="reg.php"> Встать в наши дружные ряды.</a>
     </div>
 </form>
 </body>

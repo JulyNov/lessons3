@@ -8,3 +8,4 @@ if (!$_SESSION['id']) {
 
 echo 'Привет Юзер<br>';
 echo '<a href="/logout.php">Выход</a>';
+
