@@ -26,17 +26,22 @@ if ($_POST) {
         $_POST['age'] = (int)$_POST['age'];
     }
 
+    function GetFileExt($FileName)
+    {
+        return strtolower(pathinfo($FileName, PATHINFO_EXTENSION));
+    }
+
     function ProcessFile(array $file)
     {
         if ($file['error'] === UPLOAD_ERR_NO_FILE) {
-           return '';
+            return '';
         }
 
         if ($file['error'] !== UPLOAD_ERR_OK) {
-           return 'Ошибка загрузки файла';
+            return 'Ошибка загрузки файла';
         }
 
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $ext = GetFileExt($file['name']);
         if (!in_array($ext, ['jpeg', 'jpg', 'gif', 'png'], true)) {
             return 'Загруженный файл не картинка';
         }
@@ -46,17 +51,14 @@ if ($_POST) {
             return 'Загруженный файл не поддерживаемого формата';
         }
 
-        $uploadsDir = __DIR__ . '/photos';
-        $newFileName = uniqid('', true) . '.' . $ext;
-        move_uploaded_file($file['tmp_name'], "$uploadsDir/$newFileName");
         return '';
     }
 
     if ($_FILES['file']) {
-       $Error = ProcessFile($_FILES['file']);
-       if ($Error){
-           $ERRORS[] = $Error;
-       }
+        $Error = ProcessFile($_FILES['file']);
+        if ($Error) {
+            $ERRORS[] = $Error;
+        }
     }
 
     if (!$ERRORS) {
@@ -68,10 +70,20 @@ if ($_POST) {
         $sql->execute();
 
         $_SESSION['id'] = $sql->insert_id;
+
+        $uploadsDir = __DIR__ . '/photos';
+        $ext = GetFileExt($_FILES['file']['name']);
+        $newFileName = $_SESSION['id'] . '.' . time() . '.' . $ext;
+        move_uploaded_file($_FILES['file']['tmp_name'], "$uploadsDir/$newFileName");
+
+        $sql = $db->prepare('UPDATE Users SET foto=? WHERE id=?;');
+        $sql->bind_param('si', $newFileName, $_SESSION['id']);
+        $sql->execute();
+
         header('Location: /');
         die();
 
-       // $stmt = $mysqli->prepare("INSERT INTO CountryLanguage VALUES (?, ?, ?, ?)");
+        // $stmt = $mysqli->prepare("INSERT INTO CountryLanguage VALUES (?, ?, ?, ?)");
         //$stmt->bind_param('sssd', $code, $language, $official, $percent);
 
     }
