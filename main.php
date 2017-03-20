@@ -7,3 +7,5 @@ try {
 } catch (Exception $Exception) {
     die($Exception->getMessage());
 }
+
+$PhotoDir = '/photos/';

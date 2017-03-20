@@ -71,7 +71,7 @@ if ($_POST) {
 
         $_SESSION['id'] = $sql->insert_id;
 
-        $uploadsDir = __DIR__ . '/photos';
+        $uploadsDir = __DIR__ . $PhotoDir;
         $ext = GetFileExt($_FILES['file']['name']);
         $newFileName = $_SESSION['id'] . '.' . time() . '.' . $ext;
         move_uploaded_file($_FILES['file']['tmp_name'], "$uploadsDir/$newFileName");

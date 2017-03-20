@@ -26,4 +26,5 @@ while ($sql->fetch()) {
     echo '</tr>';
 
 }
-echo '</table>';
+echo '</table><br>';
+echo '<a href="/foto.php"> Список фото</a>';
