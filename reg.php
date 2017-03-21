@@ -62,11 +62,15 @@ if ($_POST) {
     }
 
     if (!$ERRORS) {
-
+        // это все можно оформить одним запросом
+        // сначала сохранить картинку потом записать данные
+        // так же необходимо обрезать картинку при ее сохранении
         $sql = $db->prepare('INSERT INTO Users (email, password, name, age, description)
             VALUES (?, ?, ?, ?, ?);');
         $password = sha1($_POST['password']);
+
         $sql->bind_param('sssis', $_POST['email'], $password, $_POST['name'], $_POST['age'], $_POST['description']);
+
         $sql->execute();
 
         $_SESSION['id'] = $sql->insert_id;
